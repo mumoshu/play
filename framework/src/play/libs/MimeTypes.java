@@ -73,7 +73,7 @@ public class MimeTypes {
     		contentType =  defaultContentType;
     	}
     	if (contentType != null && contentType.startsWith("text/")){
-    		return contentType + "; charset=utf-8";
+    		return contentType + "; charset=" + play.mvc.Encoding.getCurrentEncoding().getHttpEncoding();
     	}
     	return contentType;
     }

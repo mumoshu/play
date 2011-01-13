@@ -605,7 +605,7 @@ public class Http {
 
         public void print(Object o) {
             try {
-                out.write(o.toString().getBytes("utf-8"));
+                out.write(o.toString().getBytes(Encoding.getCurrentEncoding().getJavaEncoding()));
             } catch (IOException ex) {
                 throw new UnexpectedException("UTF-8 problem ?", ex);
             }

@@ -4,6 +4,7 @@ import java.util.Map;
 
 import play.exceptions.UnexpectedException;
 import play.libs.MimeTypes;
+import play.mvc.Encoding;
 import play.mvc.Http.Request;
 import play.mvc.Http.Response;
 import play.templates.Template;
@@ -26,8 +27,8 @@ public class RenderTemplate extends Result {
 
     public void apply(Request request, Response response) {
         try {
-            final String contentType = MimeTypes.getContentType(name, "text/plain");
-            response.out.write(content.getBytes("utf-8"));
+            final String contentType = MimeTypes.getContentType(name, "text/plain; charset=" + Encoding.getCurrentEncoding().getHttpEncoding());
+            response.out.write(content.getBytes(Encoding.getCurrentEncoding().getJavaEncoding()));
             setContentTypeIfNotSet(response, contentType);
         } catch (Exception e) {
             throw new UnexpectedException(e);
