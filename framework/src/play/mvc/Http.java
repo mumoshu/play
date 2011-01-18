@@ -426,6 +426,10 @@ public class Http {
          */
         public String contentType;
         /**
+         * Response character encoding
+         */
+        public String characterEncoding = defaultCharacterEncoding;
+        /**
          * Response headers
          */
         public Map<String, Http.Header> headers = new HashMap<String, Header>(16);
@@ -445,6 +449,10 @@ public class Http {
          * Bind to thread
          */
         public static ThreadLocal<Response> current = new ThreadLocal<Response>();
+        /**
+         * Default response character encoding
+         */
+        public static String defaultCharacterEncoding = "utf-8";
 
         /**
          * Retrieve the current response
@@ -605,7 +613,7 @@ public class Http {
 
         public void print(Object o) {
             try {
-                out.write(o.toString().getBytes(Encoding.getCurrentEncoding().getJavaEncoding()));
+                out.write(o.toString().getBytes("utf-8"));
             } catch (IOException ex) {
                 throw new UnexpectedException("UTF-8 problem ?", ex);
             }

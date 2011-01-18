@@ -220,7 +220,7 @@ public class PlayHandler extends SimpleChannelUpstreamHandler {
                 if (request.cookies.get(Scope.COOKIE_PREFIX + "_ERRORS") != null && request.cookies.get(Scope.COOKIE_PREFIX + "_ERRORS").value != null) {
                     error.append(request.cookies.get(Scope.COOKIE_PREFIX + "_ERRORS").value);
                 }
-                String errorData = URLEncoder.encode(error.toString(), "utf-8");
+                String errorData = URLEncoder.encode(error.toString(), response.characterEncoding);
                 Http.Cookie c = new Http.Cookie();
                 c.value = errorData;
                 c.name = Scope.COOKIE_PREFIX + "_ERRORS";
@@ -306,9 +306,9 @@ public class PlayHandler extends SimpleChannelUpstreamHandler {
         }
 
         if (response.contentType != null) {
-            nettyResponse.setHeader(CONTENT_TYPE, response.contentType + (response.contentType.startsWith("text/") && !response.contentType.contains("charset") ? "; charset=utf-8" : ""));
+            nettyResponse.setHeader(CONTENT_TYPE, response.contentType + (response.contentType.startsWith("text/") && !response.contentType.contains("charset") ? "; charset=" + response.characterEncoding : ""));
         } else {
-            nettyResponse.setHeader(CONTENT_TYPE, "text/plain; charset=utf-8");
+            nettyResponse.setHeader(CONTENT_TYPE, "text/plain; charset=" + response.characterEncoding);
         }
 
         addToResponse(response, nettyResponse);
@@ -609,7 +609,7 @@ public class PlayHandler extends SimpleChannelUpstreamHandler {
 
         String errorHtml = TemplateLoader.load("errors/404." + format).render(binding);
         try {
-            ChannelBuffer buf = ChannelBuffers.copiedBuffer(errorHtml.getBytes("utf-8"));
+            ChannelBuffer buf = ChannelBuffers.copiedBuffer(errorHtml.getBytes(Response.current().characterEncoding));
             nettyResponse.setContent(buf);
             ChannelFuture writeFuture = ctx.getChannel().write(nettyResponse);
             writeFuture.addListener(ChannelFutureListener.CLOSE);
@@ -692,7 +692,7 @@ public class PlayHandler extends SimpleChannelUpstreamHandler {
             try {
                 String errorHtml = TemplateLoader.load("errors/500." + format).render(binding);
 
-                ChannelBuffer buf = ChannelBuffers.copiedBuffer(errorHtml.getBytes("utf-8"));
+                ChannelBuffer buf = ChannelBuffers.copiedBuffer(errorHtml.getBytes(response.characterEncoding));
                 nettyResponse.setContent(buf);
                 ChannelFuture writeFuture = ctx.getChannel().write(nettyResponse);
                 writeFuture.addListener(ChannelFutureListener.CLOSE);
@@ -701,7 +701,7 @@ public class PlayHandler extends SimpleChannelUpstreamHandler {
                 Logger.error(e, "Internal Server Error (500) for request %s", request.method + " " + request.url);
                 Logger.error(ex, "Error during the 500 response generation");
                 try {
-                    ChannelBuffer buf = ChannelBuffers.copiedBuffer("Internal Error (check logs)".getBytes("utf-8"));
+                    ChannelBuffer buf = ChannelBuffers.copiedBuffer("Internal Error (check logs)".getBytes(response.characterEncoding));
                     nettyResponse.setContent(buf);
                     ChannelFuture writeFuture = ctx.getChannel().write(nettyResponse);
                     writeFuture.addListener(ChannelFutureListener.CLOSE);
@@ -711,7 +711,7 @@ public class PlayHandler extends SimpleChannelUpstreamHandler {
             }
         } catch (Throwable exxx) {
             try {
-                ChannelBuffer buf = ChannelBuffers.copiedBuffer("Internal Error (check logs)".getBytes("utf-8"));
+                ChannelBuffer buf = ChannelBuffers.copiedBuffer("Internal Error (check logs)".getBytes(response.characterEncoding));
                 nettyResponse.setContent(buf);
                 ChannelFuture writeFuture = ctx.getChannel().write(nettyResponse);
                 writeFuture.addListener(ChannelFutureListener.CLOSE);
@@ -815,7 +815,7 @@ public class PlayHandler extends SimpleChannelUpstreamHandler {
         } catch (Throwable ez) {
             Logger.error(ez, "serveStatic for request %s", request.method + " " + request.url);
             try {
-                ChannelBuffer buf = ChannelBuffers.copiedBuffer("Internal Error (check logs)".getBytes("utf-8"));
+                ChannelBuffer buf = ChannelBuffers.copiedBuffer("Internal Error (check logs)".getBytes(response.characterEncoding));
                 nettyResponse.setContent(buf);
                 ChannelFuture future = ctx.getChannel().write(nettyResponse);
                 future.addListener(ChannelFutureListener.CLOSE);

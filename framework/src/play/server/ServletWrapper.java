@@ -308,7 +308,7 @@ public class ServletWrapper extends HttpServlet implements ServletContextListene
         servletResponse.setContentType(MimeTypes.getContentType("404." + format, "text/plain"));
         String errorHtml = TemplateLoader.load("errors/404." + format).render(binding);
         try {
-            servletResponse.getOutputStream().write(errorHtml.getBytes("utf-8"));
+            servletResponse.getOutputStream().write(errorHtml.getBytes(Response.current().characterEncoding));
         } catch (Exception fex) {
             Logger.error(fex, "(utf-8 ?)");
         }
@@ -363,7 +363,7 @@ public class ServletWrapper extends HttpServlet implements ServletContextListene
             response.setContentType(MimeTypes.getContentType("500." + format, "text/plain"));
             try {
                 String errorHtml = TemplateLoader.load("errors/500." + format).render(binding);
-                response.getOutputStream().write(errorHtml.getBytes("utf-8"));
+                response.getOutputStream().write(errorHtml.getBytes(Response.current().characterEncoding));
                 Logger.error(e, "Internal Server Error (500)");
             } catch (Throwable ex) {
                 Logger.error(e, "Internal Server Error (500)");
@@ -380,9 +380,9 @@ public class ServletWrapper extends HttpServlet implements ServletContextListene
 
     public void copyResponse(Request request, Response response, HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws IOException {
         if (response.contentType != null) {
-            servletResponse.setHeader("Content-Type", response.contentType + (response.contentType.startsWith("text/") ? "; charset=utf-8" : ""));
+            servletResponse.setHeader("Content-Type", response.contentType + (response.contentType.startsWith("text/") ? "; charset=" + response.characterEncoding : ""));
         } else {
-            servletResponse.setHeader("Content-Type", "text/plain;charset=utf-8");
+            servletResponse.setHeader("Content-Type", "text/plain;charset=" + response.characterEncoding);
         }
 
         servletResponse.setStatus(response.status);
