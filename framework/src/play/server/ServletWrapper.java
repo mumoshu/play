@@ -380,7 +380,7 @@ public class ServletWrapper extends HttpServlet implements ServletContextListene
 
     public void copyResponse(Request request, Response response, HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws IOException {
         if (response.contentType != null) {
-            servletResponse.setHeader("Content-Type", response.contentType + (response.contentType.startsWith("text/") ? "; charset=" + response.characterEncoding : ""));
+            servletResponse.setHeader("Content-Type", response.contentType + (response.contentType.startsWith("text/")  && !response.contentType.contains("charset") ? "; charset=" + response.characterEncoding : ""));
         } else {
             servletResponse.setHeader("Content-Type", "text/plain;charset=" + response.characterEncoding);
         }
